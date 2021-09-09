@@ -1,11 +1,3 @@
-/******************************************************************************
-
-                            Online C Compiler.
-                Code, Compile, Run and Debug C program online.
-Write your code in this editor and press "Run" button to compile and execute it.
-
-*******************************************************************************/
-
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
@@ -27,9 +19,11 @@ int tablaDeTransicion[7][8] = {
       /* q4+ */{ 7, 5, 5, 5, 5, 7, 7}, // Estado final 4 de Hexadecimal
       /* q5+ */{ 7, 5, 5, 5, 5, 7, 7}, // Estado final 5 de Octal
       /* q6+ */{ 7, 6, 6, 7, 7, 7, 7}, // Estado final 3,6 No se reconoce
-      /* q7	 */{ 7, 7, 7, 7, 7, 7, 7}  //
+      /* q7	 */{ 7, 7, 7, 7, 7, 7, 7},  //
 };
 
+/*01239123&0&01231231239&1231231232321312r&z467&-123&4A67&A467&AAAA&4a67&01234567&ZZZZZZ&86-0,2;4/&+1234123&b444&10&-123&0x123&0xAAA&0xf5f&22
+*/
 int main(){
    //se abre el archivo de lectura
    FILE *fEntrada = fopen("Entrada.txt", "r");// o la posicion de disco duro en donde lo tengan guardado
@@ -39,7 +33,9 @@ int main(){
     char letra;
     int j = 0, i = 0, k = 0;
     char palabraAux[150]={""};
-
+   /* fprintf(fSalida,"palabraAux:  %s",palabraAux);*/
+ /*  fprintf(fSalida,"Mayus:  %d",'A');
+   fprintf(fSalida,"Minus:  %d",'a');*/
     do {
         letra = fgetc(fEntrada);
          if (letra != '&' && !feof(fEntrada)){
@@ -150,14 +146,12 @@ int procesarPalabra(char palabraRecibida[], int largoPalabra){
   
    
    //procesa letra por letra y va actualizando los estados
-      while(palabraRecibida[i]!= '\0' || filaActual == 7){
+      while(palabraRecibida[i]!= '\0'){
          columnaActual=determinarColumna(palabraRecibida[i]);
          actualizarEstado(columnaActual,filaActual);
 
          i++;
       }
-
-   if(tablaDeTransicion[*filaActual][columnaActual]!=7 ){  //si el valor del estado final es 6 sabemos que no es valida
 
       switch(*filaActual)
       {
@@ -173,7 +167,11 @@ int procesarPalabra(char palabraRecibida[], int largoPalabra){
       case 5: // Caso de Hexadecimal
          tipoDeConstante = 3;
          break;
+         
+     case 7:
+        tipoDeConstante = 0;
+        break;
       }
-   }
+   
    return tipoDeConstante;
 }
