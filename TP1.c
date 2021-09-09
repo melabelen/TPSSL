@@ -1,3 +1,11 @@
+/******************************************************************************
+
+                            Online C Compiler.
+                Code, Compile, Run and Debug C program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
@@ -85,7 +93,7 @@ void actualizarEstado(int columnaAnterior, int *filaAnterior){ //el estado anter
    *filaAnterior = filaSiguiente;
 }
 
-int esPalabra (const char *s){
+/*int esPalabra (const char *s){
 	
 	int e;
 	unsigned int i;
@@ -96,35 +104,35 @@ int esPalabra (const char *s){
 	}
 	
 	return e;
-}
+}*/
 
 
 int determinarColumna(char letra){
    int columnaADevolver = 0;
    switch(letra)
    {
+    case '-': //Caso -
+	case '+': // Caso +
+		columnaADevolver = 0;
+      break;
 	case '0': // Caso de 0
-      columnaADevolver = 0;
+      columnaADevolver = 1;
       break;
    	case 49 ... 55: // Caso de 1-7
-      	columnaADevolver = 1;
+      	columnaADevolver = 2;
       //  fila = tablaDeTransicion[fila][1]
       break;
    	case 56 ... 57: // Caso de 8-9
-      	columnaADevolver = 2;
+      	columnaADevolver = 3;
       break;
    	case 65 ... 70: // Caso de A-F (mayuscula)
    	case 97 ... 102: // Caso de a-f (minuscula)
-      	columnaADevolver = 3;
+      	columnaADevolver = 4;
       break;
    	case 'X': // Caso x (minuscula)
    	case 'x': // Caso X (mayuscula)
-      	columnaADevolver = 4;
+      	columnaADevolver = 5;
       break;
-	case '-': //Caso -
-	case '+': // Caso +
-		columnaADevolver = 5;
-      break;		
    default: // Caso de Error, si no devuelve ninguno de los casos anteriores: {no rec} en tabla
       columnaADevolver = 6;
       break;
@@ -139,30 +147,30 @@ int procesarPalabra(char palabraRecibida[], int largoPalabra){
    int * filaActual;
    int h=0;
    filaActual= &h;
+  
    
    //procesa letra por letra y va actualizando los estados
-      while(palabraRecibida[i]!= '\0' ){
+      while(palabraRecibida[i]!= '\0' || filaActual == 7){
          columnaActual=determinarColumna(palabraRecibida[i]);
          actualizarEstado(columnaActual,filaActual);
 
          i++;
-         printf("Cantidad letras = %d    ",i);
       }
 
-   if(tablaDeTransicion[*filaActual][columnaActual]!=6 ){  //si el valor del estado final es 6 sabemos que no es valida
+   if(tablaDeTransicion[*filaActual][columnaActual]!=7 ){  //si el valor del estado final es 6 sabemos que no es valida
 
       switch(*filaActual)
       {
-      case 1:// Caso de Octal
-      case 5: 
+      case 2:// Caso de Octal
+      case 6: 
          tipoDeConstante = 1;
          break;
 
-      case 2: // Caso de Decimal
+      case 3: // Caso de Decimal
          tipoDeConstante = 2;
          break;
 
-      case 4: // Caso de Hexadecimal
+      case 5: // Caso de Hexadecimal
          tipoDeConstante = 3;
          break;
       }
