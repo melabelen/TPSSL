@@ -62,7 +62,7 @@ void grabarPalabra (char palabraAnalizada[], int tipoDeConstate, FILE *fSalida){
     fseek(fSalida, 0, SEEK_END); //Nos paramos al final del archivo
     char constanteEntera[20];
     if (tipoDeConstate == 0) {
-      fprintf (fSalida, "%s \t\t %s\n", palabraAnalizada, "Es discapacitado"); 
+      fprintf (fSalida, "%s \t\t %s\n", palabraAnalizada, "Es invalido"); 
     }
     else if (tipoDeConstate == 1){
         int resultado = sacarCalculo(palabraAnalizada)
@@ -71,8 +71,42 @@ void grabarPalabra (char palabraAnalizada[], int tipoDeConstate, FILE *fSalida){
     
 }
 
-int sacarCalculo(char palabraAnalizada[]){
+char *obtenerNotacion(char palabraAnalizada[]){
+    int i = 0;
+    char notacion[] = "";
+    char numeroActual[] = "";
+    char *operadorEnEspera = ""; 
+    printf("Llega aca xd");
+    while(&palabraAnalizada[i] != "\0"){
+        while(palabraAnalizada[i] != '+' || palabraAnalizada[i] != '*' || palabraAnalizada[i] != '-'){
+            printf(palabraAnalizada[i]);
+            strcat(numeroActual,palabraAnalizada[i]);
+            i++;
+        }
+        strcat(notacion,numeroActual);
+        if(operadorEnEspera != ""){
+            strcat(notacion,&operadorEnEspera);
+            operadorEnEspera = "";
+        }
+        else{
+            operadorEnEspera = palabraAnalizada[i];
+
+        }
+        i++;
+    }
+    return notacion;
+}
+
+
+int resolverNotacion(char *notacion){
     
+}
+
+
+int sacarCalculo(char palabraAnalizada[]){
+    char notacionPolaca[150]= obtenerNotacion(palabraAnalizada);
+    int resultado = resolverNotacion(notacionPolaca);
+    return resultado;
 }
 
 
