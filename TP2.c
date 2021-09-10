@@ -7,19 +7,11 @@ void actualizarEstado (int columnaAnterior, int *filaAnterior);
 int determinarColumna (char letra);
 void grabarPalabra (char palabraAnalizada[], int tipoDeConstate, FILE *fSalida);
 
-int tablaDeTransicion[8][7] = {
-// Ejemplo= 017: [0][x] -> leemos letra '0' -> columna 0 -> [0][0] = 1 -> osea me voy al q1 (es decir filaSiguiente = 1).
-              // [1][x] -> leemos letra '1' -> columna 1 -> [1][1] = 5 -> me voy al q5 (es decir filaSiguiente = 5).
-              // [5][x] -> leemos letra '7' -> columna 1 -> [5][1] = 5 -> La posicion no es un error, y ademas por la fila y columna determinamos que es Octal.
-//        		{+,-}{0}[1-7][8-9][a-fA-F][xX]{no rec}.
-      /* q0  */{ 1, 2, 3, 3, 7, 7, 7},
-      /* q1+ */{ 7, 7, 3, 3, 7, 7, 7}, // Estado final 1 Octal (cero)
-      /* q2+ */{ 7, 6, 6, 7, 7, 4, 7}, // Estado final 2 de Decimal
-      /* q3  */{ 7, 3, 3, 3, 7, 7, 7}, // Transicion de 0 a [xX]
-      /* q4+ */{ 7, 5, 5, 5, 5, 7, 7}, // Estado final 4 de Hexadecimal
-      /* q5+ */{ 7, 5, 5, 5, 5, 7, 7}, // Estado final 5 de Octal
-      /* q6+ */{ 7, 6, 6, 7, 7, 7, 7}, // Estado final 3,6 No se reconoce
-      /* q7	 */{ 7, 7, 7, 7, 7, 7, 7},  //
+int tablaDeTransicion[4][4] = {
+    {1, 3, 3, 3},
+    {1, 2, 1, 3},
+    {1, 3, 3, 3},
+    {3, 3, 3, 3},
 };
 
 /*01239123&0&01231231239&1231231232321312r&z467&-123&4A67&A467&AAAA&4a67&01234567&ZZZZZZ&86-0,2;4/&+1234123&b444&10&-123&0x123&0xAAA&0xf5f&22
@@ -69,18 +61,18 @@ int main(){
 void grabarPalabra (char palabraAnalizada[], int tipoDeConstate, FILE *fSalida){
     fseek(fSalida, 0, SEEK_END); //Nos paramos al final del archivo
     char constanteEntera[20];
-    if (tipoDeConstate == 2) {
-      fprintf (fSalida, "%s \t\t %s\n", palabraAnalizada, "Decimal"); 
+    if (tipoDeConstate == 0) {
+      fprintf (fSalida, "%s \t\t %s\n", palabraAnalizada, "Es discapacitado"); 
     }
     else if (tipoDeConstate == 1){
-      fprintf (fSalida, "%s \t\t %s\n", palabraAnalizada, "Octal");
+        int resultado = sacarCalculo(palabraAnalizada)
+      fprintf (fSalida, "%s \t\t %s\n", palabraAnalizada, "Es valido");
     }
-    else if (tipoDeConstate == 3){
-      fprintf (fSalida, "%s \t\t %s\n", palabraAnalizada, "Hexadecimal");
-    }
-    else if (tipoDeConstate == 0){
-      fprintf (fSalida, "%s \t\t %s\n", palabraAnalizada, "No Reconocida");
-    }
+    
+}
+
+int sacarCalculo(char palabraAnalizada[]){
+    
 }
 
 
@@ -97,29 +89,26 @@ int determinarColumna(char letra){
    switch(letra)
    {
     case '-': //Caso -
-	case '+': // Caso +
-		columnaADevolver = 0;
-      break;
-	case '0': // Caso de 0
-      columnaADevolver = 1;
-      break;
-   	case 49 ... 55: // Caso de 1-7
-      	columnaADevolver = 2;
-      //  fila = tablaDeTransicion[fila][1]
-      break;
-   	case 56 ... 57: // Caso de 8-9
-      	columnaADevolver = 3;
-      break;
-   	case 65 ... 70: // Caso de A-F (mayuscula)
-   	case 97 ... 102: // Caso de a-f (minuscula)
-      	columnaADevolver = 4;
-      break;
-   	case 'X': // Caso x (minuscula)
-   	case 'x': // Caso X (mayuscula)
-      	columnaADevolver = 5;
-      break;
-   default: // Caso de Error, si no devuelve ninguno de los casos anteriores: {no rec} en tabla
-      columnaADevolver = 6;
+        *menos = true;
+        columnaADevolver = 1;
+        break;
+    case '+': // Caso +
+        *mas = true;
+        columnaADevolver = 1;
+        break;
+    case '*': // caso *
+        *por = true;
+        columnaADevolver = 1;
+        break;
+    case '0': // Caso de 0
+        columnaADevolver = 2;
+        break;
+    case 49 ... 57: // Caso de 1-7
+          columnaADevolver = 0;
+        break;
+       
+   default:
+      columnaADevolver = 3;
       break;
    }
    return columnaADevolver;
@@ -144,20 +133,12 @@ int procesarPalabra(char palabraRecibida[], int largoPalabra){
 
       switch(*filaActual)
       {
-      case 2:// Caso de Octal
-      case 6: 
+      case 1: 
          tipoDeConstante = 1;
          break;
 
-      case 3: // Caso de Decimal
-         tipoDeConstante = 2;
-         break;
-
-      case 5: // Caso de Hexadecimal
-         tipoDeConstante = 3;
-         break;
          
-     case 7:
+     case 3:
         tipoDeConstante = 0;
         break;
       }
