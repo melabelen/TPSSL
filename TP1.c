@@ -4,70 +4,66 @@
 
 int procesarPalaba (char palabraRecibida[], int largoPalabra);
 void actualizarEstado (int columnaAnterior, int *filaAnterior);
-int determinarColumna (char letra);
+int determinarColumna (char caracter);
 void grabarPalabra (char palabraAnalizada[], int tipoDeConstate, FILE *fSalida);
 
 int tablaDeTransicion[8][7] = {
-// Ejemplo= 017: [0][x] -> leemos letra '0' -> columna 0 -> [0][0] = 1 -> osea me voy al q1 (es decir filaSiguiente = 1).
-              // [1][x] -> leemos letra '1' -> columna 1 -> [1][1] = 5 -> me voy al q5 (es decir filaSiguiente = 5).
-              // [5][x] -> leemos letra '7' -> columna 1 -> [5][1] = 5 -> La posicion no es un error, y ademas por la fila y columna determinamos que es Octal.
-//        		{+,-}{0}[1-7][8-9][a-fA-F][xX]{no rec}.
       /* q0  */{ 1, 2, 3, 3, 7, 7, 7},
-      /* q1+ */{ 7, 7, 3, 3, 7, 7, 7}, // Estado final 1 Octal (cero)
-      /* q2+ */{ 7, 6, 6, 7, 7, 4, 7}, // Estado final 2 de Decimal
-      /* q3  */{ 7, 3, 3, 3, 7, 7, 7}, // Transicion de 0 a [xX]
-      /* q4+ */{ 7, 5, 5, 5, 5, 7, 7}, // Estado final 4 de Hexadecimal
-      /* q5+ */{ 7, 5, 5, 5, 5, 7, 7}, // Estado final 5 de Octal
-      /* q6+ */{ 7, 6, 6, 7, 7, 7, 7}, // Estado final 3,6 No se reconoce
-      /* q7	 */{ 7, 7, 7, 7, 7, 7, 7},  //
+      /* q1+ */{ 7, 7, 3, 3, 7, 7, 7},
+      /* q2+ */{ 7, 6, 6, 7, 7, 4, 7},  
+      /* q3  */{ 7, 3, 3, 3, 7, 7, 7},  
+      /* q4+ */{ 7, 5, 5, 5, 5, 7, 7}, 
+      /* q5+ */{ 7, 5, 5, 5, 5, 7, 7},  
+      /* q6+ */{ 7, 6, 6, 7, 7, 7, 7},  
+      /* q7	 */{ 7, 7, 7, 7, 7, 7, 7},  
 };
 
 /*01239123&0&01231231239&1231231232321312r&z467&-123&4A67&A467&AAAA&4a67&01234567&ZZZZZZ&86-0,2;4/&+1234123&b444&10&-123&0x123&0xAAA&0xf5f&22
 */
 int main(){
-   //se abre el archivo de lectura
-   FILE *fEntrada = fopen("Entrada.txt", "r");// o la posicion de disco duro en donde lo tengan guardado
-   //se abre el archivo de escritura
-   FILE *fSalida = fopen("Salida.txt", "w");
+    //Abro el archivo de lectura
+    FILE *fEntrada = fopen("Entrada.txt", "r");
+    //Abro el archivo de escritura
+    FILE *fSalida = fopen("Salida.txt", "w");
 
-    char letra;
+    char caracterActual;
     int j = 0, i = 0, k = 0;
-    char palabraAux[150]={""};
-   /* fprintf(fSalida,"palabraAux:  %s",palabraAux);*/
- /*  fprintf(fSalida,"Mayus:  %d",'A');
-   fprintf(fSalida,"Minus:  %d",'a');*/
-    do {
-        letra = fgetc(fEntrada);
-         if (letra != '&' && !feof(fEntrada)){
-              palabraAux[i] = letra;
+    char numeroActual[150]={""};
+    while(!feof(fEntrada)){
+        //Leo un caracter del archivo
+        caracterActual = fgetc(fEntrada);
+        //Si sigo procesando el mismo supuesto numero, lo guardo caracter a caracter
+        if (caracterActual != '&' && !feof(fEntrada)){
+              numeroActual[i] = caracterActual;
               i++;
-         }else{ //Termina la palabra
+        }
+        else{ //Termina el numero
+                 //proceso el numeroActual
+                char Tipo=procesarPalabra(numeroActual,i);
 
-                 //proceso palabraAux
-                char Tipo=procesarPalabra(palabraAux,i);
+                //Grabo la palabra en el archivo de salida
+                grabarPalabra(numeroActual,Tipo,fSalida);
 
-                //Se graba la palabra en el archivo de salida
-                grabarPalabra(palabraAux,Tipo,fSalida);
-
-                //Se reincializa palabra
+                //Se reincia la palabra
                 for (k = 0; k < i; k++){
-                  palabraAux[k] = '\0';
+                  numeroActual[k] = '\0';
                 }
-                //Reinicializo contador
+                //Se reinicia el contador
                 i=0;
                 
-         }
-      } while (!feof(fEntrada));
-
-   fclose(fEntrada);
-   fclose(fSalida);
-   printf("%s", "Procesamiento Terminado");
-   return 0;
+        }
+      } 
+    //Cierro los archivos
+    fclose(fEntrada);
+    fclose(fSalida);
+    printf("%s", "Procesamiento Terminado");
+    return 0;
 }
 
 
 void grabarPalabra (char palabraAnalizada[], int tipoDeConstate, FILE *fSalida){
-    fseek(fSalida, 0, SEEK_END); //Nos paramos al final del archivo
+     //Escribo al final del archivo de salida el numero y su tipo
+    fseek(fSalida, 0, SEEK_END);
     char constanteEntera[20];
     if (tipoDeConstate == 2) {
       fprintf (fSalida, "%s \t\t %s\n", palabraAnalizada, "Decimal"); 
@@ -84,41 +80,46 @@ void grabarPalabra (char palabraAnalizada[], int tipoDeConstate, FILE *fSalida){
 }
 
 
-void actualizarEstado(int columnaAnterior, int *filaAnterior){ //el estado anterior deberia estar compuesto por la columna y la fila anteriores
+void actualizarEstado(int columnaAnterior, int *filaAnterior){ 
+    //Busco cual es la fila (o estado) siguiente en la tabla a partir de la fila y columna anteriores
    int filaSiguiente = tablaDeTransicion[*filaAnterior][columnaAnterior];
+   //Actualizo el estado
    *filaAnterior = filaSiguiente;
 }
 
 
 
 
-int determinarColumna(char letra){
+int determinarColumna(char caracter){
    int columnaADevolver = 0;
-   switch(letra)
+   switch(caracter)
    {
-    case '-': //Caso -
-	case '+': // Caso +
+    case '-': 
+	case '+':
 		columnaADevolver = 0;
       break;
-	case '0': // Caso de 0
+	case '0': 
       columnaADevolver = 1;
       break;
-   	case 49 ... 55: // Caso de 1-7
+    // ASCII para los numeros 1 a 7
+   	case 49 ... 55: 
       	columnaADevolver = 2;
-      //  fila = tablaDeTransicion[fila][1]
       break;
-   	case 56 ... 57: // Caso de 8-9
+    // ASCII para los numeros 8 y 9
+   	case 56 ... 57: 
       	columnaADevolver = 3;
       break;
-   	case 65 ... 70: // Caso de A-F (mayuscula)
-   	case 97 ... 102: // Caso de a-f (minuscula)
+    // ASCII para las letras A-F y a-f
+   	case 65 ... 70: 
+   	case 97 ... 102: 
       	columnaADevolver = 4;
       break;
-   	case 'X': // Caso x (minuscula)
-   	case 'x': // Caso X (mayuscula)
+   	case 'X': 
+   	case 'x':
       	columnaADevolver = 5;
       break;
-   default: // Caso de Error, si no devuelve ninguno de los casos anteriores: {no rec} en tabla
+    //Si no reconoce ninguno de los anteriores caracteres, va al estado de error
+   default: 
       columnaADevolver = 6;
       break;
    }
@@ -127,21 +128,22 @@ int determinarColumna(char letra){
 
 
 int procesarPalabra(char palabraRecibida[], int largoPalabra){
-   int tipoDeConstante = 0; // si no se reconoce quedarÃ¡ en 0
+   int tipoDeConstante = 0;
    int columnaActual = 0,i = 0;
    int * filaActual;
    int h=0;
    filaActual= &h;
   
    
-   //procesa letra por letra y va actualizando los estados
+   //Caracter a caracter, recorre el automata a partir de la tabla
       while(palabraRecibida[i]!= '\0'){
          columnaActual=determinarColumna(palabraRecibida[i]);
          actualizarEstado(columnaActual,filaActual);
 
          i++;
       }
-
+        
+    //Dependiendo del estado final en el que queda, determina el tipo de la constante
       switch(*filaActual)
       {
       case 2:// Caso de Octal
