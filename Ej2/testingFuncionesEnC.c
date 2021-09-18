@@ -158,7 +158,7 @@ void obtenerNotacion(char* palabraAnalizada, nodoString** stack){
   }
   //guardo lo que quedó en las variables al terminar el loop
   pushString(&stack, numeroActual);
-  pushearOperador(operadorEnEspera, &stack);
+  pushearOperador(operadorEnEspera, stack);
 
 }
 
