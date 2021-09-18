@@ -106,8 +106,13 @@ void obtenerNotacion(char* palabraAnalizada, nodoString** stack){
           //el operador es de mayor prioridad, el caracter vacio o
           //un conjunto de operadores
           else{
-             pushearOperador(operadorEnEspera, stack);
-              operadorEnEspera = palabraAnalizada[i];
+              if(palabraAnalizada[i] == '*'){
+                pushearOperador('*', stack);
+              }
+                else{
+                  pushearOperador(operadorEnEspera, stack);
+                   operadorEnEspera = palabraAnalizada[i];
+                }
           }
           i = i + 1;
           operadorAuxiliar = '*';
