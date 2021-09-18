@@ -3,17 +3,53 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-/*Definicion del stack*/
+/*Definicion del stack String*/
 
-typedef struct nodo{	
+typedef struct nodoString{	
+    char* info;
+	struct nodo* sgte;
+} nodoString;
+
+void pushString(nodo**, char*);
+char* popString(nodo**);
+
+char* popString(nodo** pila){
+    char* x;
+    nodo *p = *pila; 
+    if ( !p ){
+        return "-1";
+    }
+    x = p->info;     
+    *pila = p->sgte;    
+    p->sgte = NULL; 
+    free( p );       
+    
+	return x;
+}
+
+
+void pushString(nodo** pila, char* x){		
+
+ nodo*p = malloc(sizeof (nodo));
+  p->info = x;	
+  p->sgte = *pila;	
+  *pila = p;		
+  return;
+}
+
+/*Fin Definicion stack String*/
+
+/*Definicion del stack Int*/
+
+typedef struct nodoInt{	
     int info;
 	struct nodo* sgte;
-} nodo;
+} nodoInt;
 
-void push(nodo**, int);
-int pop(nodo**);
+void pushInt(nodo**, int);
+int popInt(nodo**);
 
-int pop(nodo** pila){
+int popInt(nodo** pila){
     int x;
     nodo *p = *pila; 
     if ( !p ){
@@ -28,7 +64,7 @@ int pop(nodo** pila){
 }
 
 
-void push(nodo** pila, int x){		
+void pushInt(nodo** pila, int x){	
 
  nodo*p = malloc(sizeof (nodo));
   p->info = x;	
@@ -38,7 +74,9 @@ void push(nodo** pila, int x){
 }
 
 
-/*Fin Definicion stack*/
+/*Fin Definicion stack Int*/
+
+
 int procesarPalaba (char palabraRecibida[], int largoPalabra);
 void actualizarEstado (int columnaAnterior, int *filaAnterior);
 int determinarColumna (char letra);
