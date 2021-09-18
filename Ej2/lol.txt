@@ -50,7 +50,8 @@ int main()
 {
     char* palabraAnalizada = "2+2";
     nodoString* xd = NULL;
-    xd = obtenerNotacion(palabraAnalizada);
+    nodoString* stack = NULL;
+    xd = obtenerNotacion(palabraAnalizada, &stack);
      for (int k = 0; k < strlen(palabraAnalizada); k++){
                   printf("%s", pop(&xd));
                 }
@@ -65,9 +66,8 @@ void pushearOperador(char* operadores, nodoString** stack){
     }
 }
 
-struct nodoString* obtenerNotacion(char* palabraAnalizada){
+void obtenerNotacion(char* palabraAnalizada, nodoString** stack){
   int i = 0;
-  nodoString* stack = NULL;
   char*notacion = "";
   char* numeroActual = "";
   char* operadorEnEspera = ""; 
@@ -116,8 +116,5 @@ struct nodoString* obtenerNotacion(char* palabraAnalizada){
   //guardo lo que quedó en las variables al terminar el loop
   pushString(&stack, numeroActual);
   pushearOperador(operadorEnEspera, &stack);
-  nodoString* pedro = NULL;
 
-    
-  return pedro;
 }
