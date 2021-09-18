@@ -1,7 +1,44 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
+/*Definicion del stack*/
+
+typedef struct nodo{	
+    int info;
+	struct nodo* sgte;
+} nodo;
+
+void push(nodo**, int);
+int pop(nodo**);
+
+int pop(nodo** pila){
+    int x;
+    nodo *p = *pila; 
+    if ( !p ){
+        return -1;
+    }
+    x = p->info;     
+    *pila = p->sgte;    
+    p->sgte = NULL; 
+    free( p );       
+    
+	return x;
+}
+
+
+void push(nodo** pila, int x){		
+
+ nodo*p = malloc(sizeof (nodo));
+  p->info = x;	
+  p->sgte = *pila;	
+  *pila = p;		
+  return;
+}
+
+
+/*Fin Definicion stack*/
 int procesarPalaba (char palabraRecibida[], int largoPalabra);
 void actualizarEstado (int columnaAnterior, int *filaAnterior);
 int determinarColumna (char letra);
