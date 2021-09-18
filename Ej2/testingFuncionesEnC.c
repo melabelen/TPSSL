@@ -88,11 +88,10 @@ void pushString(nodoString** pila, char* x){
 int main()
 {
     char* palabraAnalizada = "2+2";
-    nodoString* xd = NULL;
     nodoString* stack = NULL;
-    xd = obtenerNotacion(palabraAnalizada, &stack);
+    obtenerNotacion(palabraAnalizada, &stack);
      for (int k = 0; k < strlen(palabraAnalizada); k++){
-                  printf("%s", popString(&xd));
+                  printf("%s", popString(&stack));
                 }
     return 0;
 }
