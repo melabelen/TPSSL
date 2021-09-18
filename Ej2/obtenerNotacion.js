@@ -2,6 +2,12 @@ const pushearOperador = (operadores, stack) => {
   [...operadores].forEach(operador => stack.push(operador))
 }
 
+const logger = something => {
+  console.log("______________________________")
+  console.log(something)
+  console.log("______________________________")
+}
+
 const obtenerNotacion = (palabraAnalizada) => {
   let i = 0;
   let stack = []
@@ -18,6 +24,8 @@ const obtenerNotacion = (palabraAnalizada) => {
         //es un operador
         else{
           //como es un operador, el numero que lo precede ya es parte de la notacion
+          logger(numeroActual)
+          logger(operadorEnEspera)
           notacion = notacion + numeroActual;
           stack.push(numeroActual)
           //reseteo el numeroActual
@@ -41,9 +49,13 @@ const obtenerNotacion = (palabraAnalizada) => {
           //el operador es de mayor prioridad, el caracter vacio o
           //un conjunto de operadores
           else{
-             notacion = notacion  + operadorEnEspera;
-             pushearOperador(operadorEnEspera, stack)
-              operadorEnEspera = palabraAnalizada[i]
+            notacion = notacion  + operadorEnEspera;
+            if(palabraAnalizada[i] == '*'){
+              pushearOperador('*', stack)
+            }else{
+              pushearOperador(operadorEnEspera, stack)
+               operadorEnEspera = palabraAnalizada[i]
+            }
           }
           i = i + 1;
         }
@@ -90,6 +102,3 @@ const evaluar = (n1, n2, operador) => {
 
 const resultado = evaluarNotacion(notacion)
 const resultado2 = evaluarNotacion(notacion2)
-
-console.log(notacion2)
-console.log(resultado, resultado2, 'aca')
