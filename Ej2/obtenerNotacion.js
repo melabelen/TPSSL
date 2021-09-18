@@ -1,5 +1,10 @@
+const pushearOperador = (operadores, stack) => {
+  [...operadores].forEach(operador => stack.push(operador))
+}
+
 const obtenerNotacion = (palabraAnalizada) => {
   let i = 0;
+  let stack = []
   let notacion = "";
   let numeroActual = "";
   let operadorEnEspera = ""; 
@@ -14,6 +19,7 @@ const obtenerNotacion = (palabraAnalizada) => {
         else{
           //como es un operador, el numero que lo precede ya es parte de la notacion
           notacion = notacion + numeroActual;
+          stack.push(numeroActual)
           //reseteo el numeroActual
           numeroActual = "";
           //El operador es de los de menor prioridad
@@ -28,6 +34,7 @@ const obtenerNotacion = (palabraAnalizada) => {
                 //el operador en espera pasa a ser parte de la notacion 
                 //el operador analizado actualmente pasa a estar en espera
                 notacion = notacion + operadorEnEspera;
+                pushearOperador(operadorEnEspera, stack)
                 operadorEnEspera = palabraAnalizada[i];
               }
           }
@@ -35,62 +42,54 @@ const obtenerNotacion = (palabraAnalizada) => {
           //un conjunto de operadores
           else{
              notacion = notacion  + operadorEnEspera;
+             pushearOperador(operadorEnEspera, stack)
               operadorEnEspera = palabraAnalizada[i]
           }
           i = i + 1;
         }
   }
   //guardo lo que quedó en las variables al terminar el loop
-  notacion = notacion + numeroActual + operadorEnEspera
-  
-  return notacion;
-  
+  stack.push(numeroActual)
+  pushearOperador(operadorEnEspera, stack)
+
+  return stack;
 }
 
-
-const resolverNotacion = (notacion) => {
-  // La pila que va a ir resolviendo las operaciones
-  const stack = [];
-  // Iterador
-  let i = 0;
-  let caracterActual = "";
-  let operador1 = "";
-  let operador2 = "";
-  let resultadoParcial = "";
-  // recorro la palabra
-  while(notacion.length > i){
-    //si es un numero, lo agrego al stack
-    if(notacion[i] != '+' && notacion[i] != '*' && notacion[i] != '-'){
-      stack.push(notacion[i]);
-    }
-    //si no es un numero, opero 
-    else{
-      operador1 = stack.pop();
-      operador2 = stack.pop();
-      if(notacion[i] == '+'){
-        resultadoParcial = parseInt(operador1) + parseInt(operador2);
-      }
-      if(notacion[i] == '-'){
-        resultadoParcial = parseInt(operador2) - parseInt(operador1);
-      }
-      if(notacion[i] == '*'){
-        resultadoParcial = parseInt(operador1) * parseInt(operador2);
-      }
-      stack.push(resultadoParcial);
-        
-    }
-    i = i + 1;
-  }
-  return stack[0];
-}
-
-
-//junto ahre
-const operacion = "3+4*7+3-5";
-const resultado = resolverNotacion(obtenerNotacion(operacion))
-console.log(resultado);
-
+const operacion = "41-42+53-5-2-5+53*24+24+532-142";
+const operacion2 = "41-42+53-5-2-5+53*24+24+532-142+25+23+235+23+523+52+355*235*23-5*23-523-523-523523-52-5*23"
+const notacion = obtenerNotacion(operacion)
+const notacion2 = obtenerNotacion(operacion2)
 
 //para correr el codigo: https://onecompiler.com/javascript
 
 // para corroborar las notaciones: https://www.dcode.fr/reverse-polish-notation
+
+const evaluarNotacion = tokens => {
+  const operands = ['+', '-', '*'];
+  const stack = [];
+
+  for (let s of tokens) {
+    if (operands.indexOf(s) >= 0) {
+      const n2 = parseInt(stack.pop());
+      const n1 = parseInt(stack.pop());
+      stack.push(evaluar(n1, n2, s));
+    } else {
+      stack.push(s);
+    }
+  }
+
+  return parseInt(stack.pop());
+};
+
+const evaluar = (n1, n2, operador) => {
+  if (operador === '+') return n1 + n2;
+  if (operador === '-') return n1 - n2;
+  if (operador === '*') return n1 * n2;
+};
+
+
+const resultado = evaluarNotacion(notacion)
+const resultado2 = evaluarNotacion(notacion2)
+
+console.log(notacion2)
+console.log(resultado, resultado2, 'aca')
