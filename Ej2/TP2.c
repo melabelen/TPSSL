@@ -47,7 +47,7 @@ typedef struct nodoString{
 	struct nodoString* sgte;
 } nodoString;
 
-void pushString(nodoString*, char);
+void pushString(nodoString**, char*);
 char* popString(nodoString**);
 
 char* popString(nodoString** pila){
@@ -77,11 +77,11 @@ void pushString(nodoString** pila, char* x){
 /*Fin Definicion stack String*/
 
 /*Firma de funciones*/
-int procesarPalaba (char palabraRecibida[], int largoPalabra);
+int procesarPalabra (char palabraRecibida[], int largoPalabra);
 void actualizarEstado (int columnaAnterior, int *filaAnterior);
 int determinarColumna (char letra);
 void grabarPalabra (char palabraAnalizada[], int tipoDeConstate, FILE *fSalida);
-void obtenerNotacion(char* palabraAnalizada, nodoString** stack)
+void obtenerNotacion(char* palabraAnalizada, nodoString** stack);
 void pushearOperador(char* operadores, nodoString** stack);
 int resolverNotacion (nodoString** tokens);
 int evaluar(int n1,int n2,char* operador);
@@ -145,7 +145,7 @@ void grabarPalabra (char palabraAnalizada[], int tipoDeConstate, FILE *fSalida){
       fprintf (fSalida, "%s \t\t %s\n", palabraAnalizada, "El calculo es invalido"); 
     }
     else if (tipoDeConstate == 1){
-        int resultado = sacarCalculo(palabraAnalizada)
+        int resultado = sacarCalculo(palabraAnalizada);
       fprintf (fSalida, "%s \t\t El calculo es válido y el resultado es %d\n", palabraAnalizada, resultado);
     }
     
@@ -167,15 +167,12 @@ int determinarColumna(char letra){
    switch(letra)
    {
     case '-': //Caso -
-        *menos = true;
         columnaADevolver = 1;
         break;
     case '+': // Caso +
-        *mas = true;
         columnaADevolver = 1;
         break;
     case '*': // caso *
-        *por = true;
         columnaADevolver = 1;
         break;
     case '0': // Caso de 0
