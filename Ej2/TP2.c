@@ -143,7 +143,7 @@ void grabarPalabra (char palabraAnalizada[], int tipoDeConstate, FILE *fSalida){
       fprintf (fSalida, "%s \t\t %s\n", palabraAnalizada, "El calculo es invalido"); 
     }
     else if (tipoDeConstate == 1){
-        int resultado = sacarCalculo(palabraAnalizada);
+      int resultado = sacarCalculo(palabraAnalizada);
       fprintf (fSalida, "%s \t\t El calculo es válido y el resultado es %d\n", palabraAnalizada, resultado);
     }
     
@@ -222,7 +222,8 @@ int procesarPalabra(char palabraRecibida[], int largoPalabra){
 void pushearOperador(char* operadores, nodoString** stack){
     int i = 0;
     while(i < strlen(operadores)){
-        pushString(stack, &operadores[i]);
+        char operadorActual = operadores[i];
+        pushString(stack, operadorActual);
         i++;
     }
 }
@@ -234,12 +235,16 @@ void obtenerNotacion(char* palabraAnalizada, nodoString** stack){
   char* operadorEnEspera = ""; 
   char* operadorAuxiliar = "*";
   char* digitoActual = "";
+  int menos = 45;
+  int por = 42;
+  int mas = 43;
   // analizo la operación que ya sé que es válida
   while(strlen(palabraAnalizada) > i){
         //no es un operador, es un numero y obtengo todos sus digitos;
-        if(&palabraAnalizada[i] != "+" && &palabraAnalizada[i] != "*" && &palabraAnalizada[i] != "-"){
-            strcat(numeroActual,&palabraAnalizada[i]);
-            i++;
+        int letraActual = palabraAnalizada[i];
+        if((letraActual != mas) && (letraActual != por) && (letraActual != menos)){
+          strcat(numeroActual,&palabraAnalizada[i]);
+          i++;
         }
         //es un operador
         else{
@@ -249,11 +254,11 @@ void obtenerNotacion(char* palabraAnalizada, nodoString** stack){
           
             for (int k = 0; k < strlen(numeroActual); k++){
                   numeroActual[k] = '\0';
-                }
+            }
           //El operador es de los de menor prioridad
           if(operadorEnEspera == "+" || operadorEnEspera == "-"){
             //verifico si el operador actual tiene mayor prioridad
-              if(&palabraAnalizada[i] == "*"){
+              if(letraActual == por){
                 //la notacion toma al operador de mayor prioridad y el de menor
                 //sigue en espera
                 strcat(operadorAuxiliar,operadorEnEspera);
@@ -269,22 +274,26 @@ void obtenerNotacion(char* palabraAnalizada, nodoString** stack){
           //el operador es de mayor prioridad, el caracter vacio o
           //un conjunto de operadores
           else{
-              if(&palabraAnalizada[i] == "*"){
+              if(letraActual == por){
                 pushearOperador("*", stack);
               }
                 else{
                   pushearOperador(operadorEnEspera, stack);
-                   operadorEnEspera = &palabraAnalizada[i];
+                  char letraActual2 = palabraAnalizada[i];
+                  operadorEnEspera = letraActual2;
                 }
           }
           i++;
           operadorAuxiliar = "*";
         }
   }
+  printf("\nSALGO DEL WHILE\n");
+  printf("\n numero actual: %s \n", numeroActual);
+  printf("\n operador en espera actual: %c \n", operadorEnEspera);
   //guardo lo que quedó en las variables al terminar el loop
   pushString(stack, numeroActual);
-  pushearOperador(operadorEnEspera, stack);
-
+  char operadorEnEspera2[1] = {operadorEnEspera};
+  pushearOperador(operadorEnEspera2, stack);
 }
 
 //funcion que resuelve la notacion polaca inversa
@@ -326,6 +335,14 @@ int evaluar(int n1,int n2,char* operador){
 int sacarCalculo(char* palabraAnalizada){
     nodoString* stack = NULL;
     obtenerNotacion(palabraAnalizada, &stack);
+    printf("_____stack______\n");
+    printf(popString(&stack));
+    printf("\n");
+    printf(popString(&stack));
+    printf("\n");
+    printf(popString(&stack));
+    printf("\n");
+    printf("_____stack______\n");
     int resultado = resolverNotacion(&stack);
     return resultado;
 };
