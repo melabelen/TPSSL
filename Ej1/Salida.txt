@@ -1,0 +1,23 @@
+01239123 		 No Reconocida
+0 		 Octal
+01231231239 		 No Reconocida
+1231231232321312r 		 No Reconocida
+z467 		 No Reconocida
+-123 		 Decimal
+4A67 		 No Reconocida
+A467 		 No Reconocida
+AAAA 		 No Reconocida
+4a67 		 No Reconocida
+01234567 		 Octal
+ZZZZZZ 		 No Reconocida
+86-0,2;4/ 		 No Reconocida
++1234123 		 Decimal
+b444 		 No Reconocida
+10 		 Decimal
+-123 		 Decimal
+0x123 		 Hexadecimal
+0xAAA 		 Hexadecimal
+0xf5f 		 Hexadecimal
+22
+ 		 No Reconocida
+Hubo 3 hexadecimales, 2 octales y 4 decimales
