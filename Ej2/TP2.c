@@ -1,57 +1,20 @@
 #include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
 #include <stdlib.h>
-
-/*Definicion del stack String*/
-
-typedef struct nodoString{	
-    char* info;
-	struct nodo* sgte;
-} nodoString;
-
-void pushString(nodo**, char*);
-char* popString(nodo**);
-
-char* popString(nodo** pila){
-    char* x;
-    nodo *p = *pila; 
-    if ( !p ){
-        return "-1";
-    }
-    x = p->info;     
-    *pila = p->sgte;    
-    p->sgte = NULL; 
-    free( p );       
-    
-	return x;
-}
-
-
-void pushString(nodo** pila, char* x){		
-
- nodo*p = malloc(sizeof (nodo));
-  p->info = x;	
-  p->sgte = *pila;	
-  *pila = p;		
-  return;
-}
-
-/*Fin Definicion stack String*/
+#include <string.h>
 
 /*Definicion del stack Int*/
 
 typedef struct nodoInt{	
     int info;
-	struct nodo* sgte;
+	struct nodoInt* sgte;
 } nodoInt;
 
-void pushInt(nodo**, int);
-int popInt(nodo**);
+void pushInt(nodoInt**, int);
+int popInt(nodoInt**);
 
-int popInt(nodo** pila){
+int popInt(nodoInt** pila){
     int x;
-    nodo *p = *pila; 
+    nodoInt *p = *pila; 
     if ( !p ){
         return -1;
     }
@@ -64,9 +27,9 @@ int popInt(nodo** pila){
 }
 
 
-void pushInt(nodo** pila, int x){	
+void pushInt(nodoInt** pila, int x){	
 
- nodo*p = malloc(sizeof (nodo));
+ nodoInt*p = malloc(sizeof (nodoInt));
   p->info = x;	
   p->sgte = *pila;	
   *pila = p;		
@@ -77,10 +40,54 @@ void pushInt(nodo** pila, int x){
 /*Fin Definicion stack Int*/
 
 
+/*Definicion del stack String*/
+
+typedef struct nodoString{	
+    char* info;
+	struct nodoString* sgte;
+} nodoString;
+
+void pushString(nodoString*, char);
+char* popString(nodoString**);
+
+char* popString(nodoString** pila){
+    char* x;
+    nodoString *p = *pila; 
+    if ( !p ){
+        return "-1";
+    }
+    x = p->info;     
+    *pila = p->sgte;    
+    p->sgte = NULL; 
+    free( p );       
+    
+	return x;
+}
+
+
+void pushString(nodoString** pila, char* x){		
+
+ nodoString*p = malloc(sizeof (nodoString));
+  p->info = x;	
+  p->sgte = *pila;	
+  *pila = p;		
+  return;
+}
+
+/*Fin Definicion stack String*/
+
+/*Firma de funciones*/
 int procesarPalaba (char palabraRecibida[], int largoPalabra);
 void actualizarEstado (int columnaAnterior, int *filaAnterior);
 int determinarColumna (char letra);
 void grabarPalabra (char palabraAnalizada[], int tipoDeConstate, FILE *fSalida);
+void obtenerNotacion(char* palabraAnalizada, nodoString** stack)
+void pushearOperador(char* operadores, nodoString** stack);
+int resolverNotacion (nodoString** tokens);
+int evaluar(int n1,int n2,char* operador);
+int sacarCalculo(char* palabraAnalizada);
+
+/*Fin firma de funciones*/
 
 int tablaDeTransicion[4][4] = {
     {1, 3, 3, 3},
@@ -89,8 +96,6 @@ int tablaDeTransicion[4][4] = {
     {3, 3, 3, 3},
 };
 
-/*01239123&0&01231231239&1231231232321312r&z467&-123&4A67&A467&AAAA&4a67&01234567&ZZZZZZ&86-0,2;4/&+1234123&b444&10&-123&0x123&0xAAA&0xf5f&22
-*/
 int main(){
    //se abre el archivo de lectura
    FILE *fEntrada = fopen("Entrada.txt", "r");// o la posicion de disco duro en donde lo tengan guardado
@@ -146,43 +151,7 @@ void grabarPalabra (char palabraAnalizada[], int tipoDeConstate, FILE *fSalida){
     
 }
 
-char *obtenerNotacion(char palabraAnalizada[]){
-    int i = 0;
-    char notacion[] = "";
-    char numeroActual[] = "";
-    char *operadorEnEspera = ""; 
-    printf("Llega aca xd");
-    while(&palabraAnalizada[i] != "\0"){
-        while(palabraAnalizada[i] != '+' || palabraAnalizada[i] != '*' || palabraAnalizada[i] != '-'){
-            printf(palabraAnalizada[i]);
-            strcat(numeroActual,palabraAnalizada[i]);
-            i++;
-        }
-        strcat(notacion,numeroActual);
-        if(operadorEnEspera != ""){
-            strcat(notacion,&operadorEnEspera);
-            operadorEnEspera = "";
-        }
-        else{
-            operadorEnEspera = palabraAnalizada[i];
 
-        }
-        i++;
-    }
-    return notacion;
-}
-
-
-int resolverNotacion(char *notacion){
-    
-}
-
-
-int sacarCalculo(char palabraAnalizada[]){
-    char notacionPolaca[150]= obtenerNotacion(palabraAnalizada);
-    int resultado = resolverNotacion(notacionPolaca);
-    return resultado;
-}
 
 
 void actualizarEstado(int columnaAnterior, int *filaAnterior){ //el estado anterior deberia estar compuesto por la columna y la fila anteriores
@@ -253,4 +222,115 @@ int procesarPalabra(char palabraRecibida[], int largoPalabra){
       }
    
    return tipoDeConstante;
+}
+
+void pushearOperador(char* operadores, nodoString** stack){
+    int i = 0;
+    while(i < strlen(operadores)){
+        pushString(stack, &operadores[i]);
+        i++;
+    }
+}
+
+void obtenerNotacion(char* palabraAnalizada, nodoString** stack){
+  int i = 0;
+  char*notacion = "";
+  char numeroActual[100] = {""};
+  char* operadorEnEspera = ""; 
+  char* operadorAuxiliar = "*";
+  char* digitoActual = "";
+  // analizo la operación que ya sé que es válida
+  while(strlen(palabraAnalizada) > i){
+        //no es un operador, es un numero y obtengo todos sus digitos;
+        if(&palabraAnalizada[i] != "+" && &palabraAnalizada[i] != "*" && &palabraAnalizada[i] != "-"){
+            strcat(numeroActual,&palabraAnalizada[i]);
+            i++;
+        }
+        //es un operador
+        else{
+          //como es un operador, el numero que lo precede ya es parte de la notacion
+          pushString(stack, numeroActual);
+          //reseteo el numeroActual
+          
+            for (int k = 0; k < strlen(numeroActual); k++){
+                  numeroActual[k] = '\0';
+                }
+          //El operador es de los de menor prioridad
+          if(operadorEnEspera == "+" || operadorEnEspera == "-"){
+            //verifico si el operador actual tiene mayor prioridad
+              if(&palabraAnalizada[i] == "*"){
+                //la notacion toma al operador de mayor prioridad y el de menor
+                //sigue en espera
+                strcat(operadorAuxiliar,operadorEnEspera);
+                strcat(operadorEnEspera,operadorAuxiliar);
+              }
+              else{
+                //el operador en espera pasa a ser parte de la notacion 
+                //el operador analizado actualmente pasa a estar en espera
+                pushearOperador(operadorEnEspera, stack);
+                operadorEnEspera = &palabraAnalizada[i];
+              }
+          }
+          //el operador es de mayor prioridad, el caracter vacio o
+          //un conjunto de operadores
+          else{
+              if(&palabraAnalizada[i] == "*"){
+                pushearOperador("*", stack);
+              }
+                else{
+                  pushearOperador(operadorEnEspera, stack);
+                   operadorEnEspera = &palabraAnalizada[i];
+                }
+          }
+          i++;
+          operadorAuxiliar = "*";
+        }
+  }
+  //guardo lo que quedó en las variables al terminar el loop
+  pushString(stack, numeroActual);
+  pushearOperador(operadorEnEspera, stack);
+
+}
+
+//funcion que resuelve la notacion polaca inversa
+//recibe el stack con la notacion ya armada
+int resolverNotacion (nodoString** tokens) {
+    int i = 0;
+    //nuevo stack con el que se operará
+    nodoInt* stack = NULL;
+    char* nodoActual = popString(tokens);
+    int operador1 = 0;
+    int operador2 = 0;
+    //voy tomando todos los valores del stack hasta que quede vacío
+    while(nodoActual != "-1") {
+        //si el token actual es un operador, entonces opero con los dos siguientes numeros del stack
+        if (nodoActual == "+" || nodoActual == "*" || nodoActual == "-") {
+          operador2 = popInt(&stack);
+          operador1 = popInt(&stack);
+          //el resultado correspondiente se agrega al stack de vuelta
+          pushInt(&stack, evaluar(operador1, operador2, nodoActual));
+        } else {
+            // si el token es un numero, se lo agrega directo al stack
+          pushInt(&stack, atoi(nodoActual));
+        }
+        //tomo otro valor del stack
+        nodoActual = popString(tokens);
+  }
+    //el ultimo numero que queda en el stack en el que resolvimos la notacion es el resultado
+  return popInt(&stack);
+};
+
+//funcion que resuelve las operaciones que van siendo requeridas por el stack
+int evaluar(int n1,int n2,char* operador){
+  if (operador == "+") return n1 + n2;
+  if (operador == "-") return n1 - n2;
+  if (operador == "*") return n1 * n2;
+};
+
+//el calculo se saca por notacion polaca inversa
+int sacarCalculo(char* palabraAnalizada){
+    nodoString* stack = NULL;
+    obtenerNotacion(palabraAnalizada, &stack);
+    int resultado = resolverNotacion(&stack);
+    return resultado;
 }

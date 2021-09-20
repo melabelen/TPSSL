@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-int procesarPalaba (char palabraRecibida[], int largoPalabra);
+int procesarPalaba (char palabraRecibida[], int largoPalabra, int* octal, int* hexa, int* decimal);
 void actualizarEstado (int columnaAnterior, int *filaAnterior);
 int determinarColumna (char caracter);
 void grabarPalabra (char palabraAnalizada[], int tipoDeConstate, FILE *fSalida);
@@ -28,6 +28,7 @@ int main(){
 
     char caracterActual;
     int j = 0, i = 0, k = 0;
+    int decimal = 0, hexa=0,octal=0;
     char numeroActual[150]={""};
     while(!feof(fEntrada)){
         //Leo un caracter del archivo
@@ -39,7 +40,7 @@ int main(){
         }
         else{ //Termina el numero
                  //proceso el numeroActual
-                char Tipo=procesarPalabra(numeroActual,i);
+                char Tipo=procesarPalabra(numeroActual,i, &octal, &hexa, &decimal);
 
                 //Grabo la palabra en el archivo de salida
                 grabarPalabra(numeroActual,Tipo,fSalida);
@@ -53,6 +54,8 @@ int main(){
                 
         }
       } 
+      
+    fprintf(fSalida, "Hubo %d hexadecimales, %d octales y %d decimales", hexa, octal, decimal);
     //Cierro los archivos
     fclose(fEntrada);
     fclose(fSalida);
@@ -127,7 +130,7 @@ int determinarColumna(char caracter){
 }
 
 
-int procesarPalabra(char palabraRecibida[], int largoPalabra){
+int procesarPalabra(char palabraRecibida[], int largoPalabra, int* octal, int* hexa, int*decimal ){
    int tipoDeConstante = 0;
    int columnaActual = 0,i = 0;
    int * filaActual;
@@ -149,14 +152,17 @@ int procesarPalabra(char palabraRecibida[], int largoPalabra){
       case 2:// Caso de Octal
       case 6: 
          tipoDeConstante = 1;
+         *octal = *octal + 1;
          break;
 
       case 3: // Caso de Decimal
          tipoDeConstante = 2;
+         *decimal = *decimal + 1;
          break;
 
       case 5: // Caso de Hexadecimal
          tipoDeConstante = 3;
+         *hexa = *hexa +1;
          break;
          
      case 7:
