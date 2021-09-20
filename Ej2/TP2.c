@@ -142,11 +142,11 @@ void grabarPalabra (char palabraAnalizada[], int tipoDeConstate, FILE *fSalida){
     fseek(fSalida, 0, SEEK_END); //Nos paramos al final del archivo
     char constanteEntera[20];
     if (tipoDeConstate == 0) {
-      fprintf (fSalida, "%s \t\t %s\n", palabraAnalizada, "Es invalido"); 
+      fprintf (fSalida, "%s \t\t %s\n", palabraAnalizada, "El calculo es invalido"); 
     }
     else if (tipoDeConstate == 1){
         int resultado = sacarCalculo(palabraAnalizada)
-      fprintf (fSalida, "%s \t\t %s\n", palabraAnalizada, "Es valido");
+      fprintf (fSalida, "%s \t\t El calculo es válido y el resultado es %d\n", palabraAnalizada, resultado);
     }
     
 }
