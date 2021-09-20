@@ -2,6 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+int tablaDeTransicion[4][4] = {
+    {1, 3, 3, 3},
+    {1, 2, 1, 3},
+    {1, 3, 3, 3},
+    {3, 3, 3, 3},
+};
+
 /*Definicion del stack Int*/
 
 typedef struct nodoInt{	
@@ -47,7 +54,7 @@ typedef struct nodoString{
 	struct nodoString* sgte;
 } nodoString;
 
-void pushString(nodoString*, char);
+void pushString(nodoString*, char*);
 char* popString(nodoString**);
 
 char* popString(nodoString** pila){
@@ -66,7 +73,6 @@ char* popString(nodoString** pila){
 
 
 void pushString(nodoString** pila, char* x){		
-
  nodoString*p = malloc(sizeof (nodoString));
   p->info = x;	
   p->sgte = *pila;	
@@ -81,7 +87,7 @@ int procesarPalaba (char palabraRecibida[], int largoPalabra);
 void actualizarEstado (int columnaAnterior, int *filaAnterior);
 int determinarColumna (char letra);
 void grabarPalabra (char palabraAnalizada[], int tipoDeConstate, FILE *fSalida);
-void obtenerNotacion(char* palabraAnalizada, nodoString** stack)
+void obtenerNotacion(char* palabraAnalizada, nodoString** stack);
 void pushearOperador(char* operadores, nodoString** stack);
 int resolverNotacion (nodoString** tokens);
 int evaluar(int n1,int n2,char* operador);
@@ -89,12 +95,7 @@ int sacarCalculo(char* palabraAnalizada);
 
 /*Fin firma de funciones*/
 
-int tablaDeTransicion[4][4] = {
-    {1, 3, 3, 3},
-    {1, 2, 1, 3},
-    {1, 3, 3, 3},
-    {3, 3, 3, 3},
-};
+
 
 int main(){
    //se abre el archivo de lectura
@@ -105,10 +106,7 @@ int main(){
     char letra;
     int j = 0, i = 0, k = 0;
     char palabraAux[150]={""};
-   /* fprintf(fSalida,"palabraAux:  %s",palabraAux);*/
- /*  fprintf(fSalida,"Mayus:  %d",'A');
-   fprintf(fSalida,"Minus:  %d",'a');*/
-    do {
+    while (!feof(fEntrada)){
         letra = fgetc(fEntrada);
          if (letra != '&' && !feof(fEntrada)){
               palabraAux[i] = letra;
@@ -129,7 +127,7 @@ int main(){
                 i=0;
                 
          }
-      } while (!feof(fEntrada));
+      }
 
    fclose(fEntrada);
    fclose(fSalida);
@@ -145,11 +143,11 @@ void grabarPalabra (char palabraAnalizada[], int tipoDeConstate, FILE *fSalida){
       fprintf (fSalida, "%s \t\t %s\n", palabraAnalizada, "El calculo es invalido"); 
     }
     else if (tipoDeConstate == 1){
-        int resultado = sacarCalculo(palabraAnalizada)
+        int resultado = sacarCalculo(palabraAnalizada);
       fprintf (fSalida, "%s \t\t El calculo es válido y el resultado es %d\n", palabraAnalizada, resultado);
     }
     
-}
+};
 
 
 
@@ -157,7 +155,7 @@ void grabarPalabra (char palabraAnalizada[], int tipoDeConstate, FILE *fSalida){
 void actualizarEstado(int columnaAnterior, int *filaAnterior){ //el estado anterior deberia estar compuesto por la columna y la fila anteriores
    int filaSiguiente = tablaDeTransicion[*filaAnterior][columnaAnterior];
    *filaAnterior = filaSiguiente;
-}
+};
 
 
 
@@ -167,15 +165,12 @@ int determinarColumna(char letra){
    switch(letra)
    {
     case '-': //Caso -
-        *menos = true;
         columnaADevolver = 1;
         break;
     case '+': // Caso +
-        *mas = true;
         columnaADevolver = 1;
         break;
     case '*': // caso *
-        *por = true;
         columnaADevolver = 1;
         break;
     case '0': // Caso de 0
@@ -190,7 +185,7 @@ int determinarColumna(char letra){
       break;
    }
    return columnaADevolver;
-}
+};
 
 
 int procesarPalabra(char palabraRecibida[], int largoPalabra){
@@ -294,7 +289,7 @@ void obtenerNotacion(char* palabraAnalizada, nodoString** stack){
 
 //funcion que resuelve la notacion polaca inversa
 //recibe el stack con la notacion ya armada
-int resolverNotacion (nodoString** tokens) {
+int resolverNotacion (nodoString** tokens){
     int i = 0;
     //nuevo stack con el que se operará
     nodoInt* stack = NULL;
@@ -333,4 +328,4 @@ int sacarCalculo(char* palabraAnalizada){
     obtenerNotacion(palabraAnalizada, &stack);
     int resultado = resolverNotacion(&stack);
     return resultado;
-}
+};
